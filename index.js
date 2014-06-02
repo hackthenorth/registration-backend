@@ -24,8 +24,32 @@ var makeUserAccount = function(obj) {
 // will get better in teh future
 var createUser = function(userObj) {
   var hash = Object.keys(userObj)[0]
-  var base = fb.child('users').child(hash);
-  base.set(userObj[hash]);
+  var users = fb.child('users').child(hash);
+  var map = fb.child('map').child('users').child(hash);
+
+  users.set(userObj[hash]);
+  map.set(userObj[hash].email);
+
+
+  doMath(userObj);
+}
+
+
+var doMath = function(obj) {
+  var hash = Object.keys(obj)[0];
+  var data = obj[hash];
+
+  var stats = fb.child('stats');
+
+  stats.child('signups').transaction(function(current) {
+    return current + 1;
+  });
+
+
+  stats.child('schools').transaction(function(current) {
+    return current + ['test']
+  });
+
 }
 
 
