@@ -4,11 +4,19 @@ var md5 = require('MD5');
 var fb = new Firebase('https://hackthenorth.firebaseio.com/');
 var ref = fb.child('register');
 
-var testObject = { name: 'Kartik Talwar', email: 'ktalwar@uwaterloo.ca',
-                   school: 'University of Waterloo', student: 'undergraduate',
-                   graduating: 2015, comments: 'Are you paying for flights?' }
-
-
+var testObject = {linkedin        : "http://linkedin.com/in/kartiktalwar",
+                  grad_year       : "2015",
+                  school          : "University of Waterloo",
+                  first_hackathon : "false",
+                  proud_project   : "I don't know about you, but I'm kind of a big deal.",
+                  name            : "Kartik Talwar",
+                  comments        : "When do I find out if I'm in?",
+                  timestamp       : 1402269531,
+                  email           : "ktalwar@uwaterloo.ca",
+                  student_status  : "undergraduate",
+                  is_hardware     : "true",
+                  travel          : "false",
+                  portfolio       : "http://github.com/kartiktalwar"}
 
 // TODO: Make these functions a class
 
