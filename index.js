@@ -70,7 +70,7 @@ var doMath = function(obj) {
     if(data.is_hardware === true) {
       return current + 1;
     } else {
-      stats.child('software').transaction(function(curr) { return current+1;});
+      stats.child('software').transaction(function(curr) { return curr+1;});
     }
   });
 
