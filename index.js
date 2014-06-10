@@ -19,13 +19,22 @@ var testObject = {linkedin        : "http://linkedin.com/in/kartiktalwar",
                   travel          : "false",
                   portfolio       : "http://github.com/kartiktalwar"}
 
-// TODO: Make these functions a class
+var sanitizeData = function(obj) {
+  obj.is_hardware = obj.is_hardware === 'true';
+  obj.travel = obj.travel === 'true';
 
+  return obj;
+}
+
+
+// TODO: Make these functions a class
 var makeUserAccount = function(obj) {
   var user = {};
   var salt = settings.salt;
+
+  var sanitized = sanitizeData(obj);
   //console.log(salt);
-  user[md5(obj.email+salt)] = obj;
+  user[md5(obj.email+salt)] = sanitized;
 
   return user;
 }
