@@ -22,6 +22,7 @@ var testObject = {linkedin        : "http://linkedin.com/in/kartiktalwar",
 var sanitizeData = function(obj) {
   obj.is_hardware = obj.is_hardware === 'true';
   obj.travel = obj.travel === 'true';
+  obj.first_hackathon = obj.first_hackathon === 'true';
 
   return obj;
 }
@@ -70,6 +71,14 @@ var doMath = function(obj) {
       return current + 1;
     } else {
       stats.child('software').transaction(function(curr) { return current+1;});
+    }
+  });
+
+  stats.child('first_hackathon').transaction(function(current) {
+    if(data.first_hackathon === true) {
+      return current+1;
+    } else {
+      return current;
     }
   });
 
