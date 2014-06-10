@@ -66,6 +66,10 @@ var doMath = function(obj) {
     return current + 1;
   });
 
+  stats.child('emails').child(data.email.split('@')[1].replace(/\./g, '-')).transaction(function(current) {
+    return current+1;
+  });
+
   stats.child('hardware').transaction(function(current) {
     if(data.is_hardware === true) {
       return current + 1;
