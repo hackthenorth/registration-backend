@@ -1,4 +1,5 @@
 var Firebase = require('firebase');
+var settings = require('./config');
 var md5 = require('MD5');
 
 var fb = new Firebase('https://hackthenorth.firebaseio.com/');
@@ -22,7 +23,9 @@ var testObject = {linkedin        : "http://linkedin.com/in/kartiktalwar",
 
 var makeUserAccount = function(obj) {
   var user = {};
-  user[md5(obj.email)] = obj;
+  var salt = settings.salt;
+  //console.log(salt);
+  user[md5(obj.email+salt)] = obj;
 
   return user;
 }
