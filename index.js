@@ -59,7 +59,7 @@ var createUser = function(userObj) {
 var doMath = function(obj) {
   var hash = Object.keys(obj)[0];
   var data = obj[hash];
-
+  var stamp = new Date(data.timestamp*1000);
   var stats = fb.child('stats');
 
   stats.child('signups').transaction(function(current) {
@@ -106,6 +106,14 @@ var doMath = function(obj) {
                               return p;
                            }, []);
     }
+  });
+
+  stats.child('signups').child((months[stamp.getMonth()]+'-'+stamp.getDate())).transaction(function(current) {
+    return current+1;
+  });
+
+  stats.child('breakdown').child((months[stamp.getMonth()]+'-'+stamp.getDate()+'-'+stamp.getHours()+'h')).transaction(function(current) {
+    return current+1;
   });
 
 }
