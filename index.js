@@ -51,6 +51,9 @@ var createUser = function(userObj) {
   users.set(userObj[hash]);
   map.set(userObj[hash].email);
 
+  if(userObj[hash].comments.length > 2) {
+    fb.child('questions').push(userObj[hash].comments);
+  }
 
   doMath(userObj);
 }
