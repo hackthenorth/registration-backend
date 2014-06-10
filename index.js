@@ -62,7 +62,9 @@ var doMath = function(obj) {
   var stamp = new Date(data.timestamp*1000);
   var stats = fb.child('stats');
 
-  stats.child('signups').transaction(function(current) {
+  var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
+
+  stats.child('total').child('signups').transaction(function(current) {
     return current + 1;
   });
 
@@ -70,15 +72,15 @@ var doMath = function(obj) {
     return current+1;
   });
 
-  stats.child('hardware').transaction(function(current) {
+  stats.child('total').child('hardware').transaction(function(current) {
     if(data.is_hardware === true) {
       return current + 1;
     } else {
-      stats.child('software').transaction(function(curr) { return curr+1;});
+      stats.child('total').child('software').transaction(function(curr) { return curr+1;});
     }
   });
 
-  stats.child('first_hackathon').transaction(function(current) {
+  stats.child('total').child('first_hackathon').transaction(function(current) {
     if(data.first_hackathon === true) {
       return current+1;
     } else {
