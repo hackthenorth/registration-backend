@@ -82,12 +82,8 @@ var doMath = function(obj) {
     }
   });
 
-  stats.child('undergraduates').transaction(function(current) {
-    if(data.student_status === 'undergraduate') {
+  stats.child('graduating').child(data.grad_year).transaction(function(current) {
       return current+1;
-    } else {
-      return current;
-    }
   });
 
   stats.child('graduates').transaction(function(current) {
