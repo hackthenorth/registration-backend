@@ -32,9 +32,8 @@ var sanitizeData = function(obj) {
 var makeUserAccount = function(obj) {
   var user = {};
   var salt = settings.salt;
-
   var sanitized = sanitizeData(obj);
-  //console.log(salt);
+
   user[md5(obj.email+salt)] = sanitized;
 
   return user;
