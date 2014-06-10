@@ -65,7 +65,6 @@ var doMath = function(obj) {
     return current + 1;
   });
 
-
   stats.child('hardware').transaction(function(current) {
     if(data.is_hardware === true) {
       return current + 1;
@@ -74,6 +73,29 @@ var doMath = function(obj) {
     }
   });
 
+  stats.child('undergraduates').transaction(function(current) {
+    if(data.student_status === 'undergraduate') {
+      return current+1;
+    } else {
+      return current;
+    }
+  });
+
+  stats.child('graduates').transaction(function(current) {
+    if(data.student_status === 'graduate') {
+      return current+1;
+    } else {
+      return current;
+    }
+  });
+
+  stats.child('highschoolers').transaction(function(current) {
+    if(data.student_status === 'highschool') {
+      return current+1;
+    } else {
+      return current;
+    }
+  });
 
   stats.child('schools').transaction(function(current) {
     if(current === null) {
