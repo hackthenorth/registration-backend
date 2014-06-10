@@ -66,6 +66,15 @@ var doMath = function(obj) {
   });
 
 
+  stats.child('hardware').transaction(function(current) {
+    if(data.is_hardware === true) {
+      return current + 1;
+    } else {
+      stats.child('software').transaction(function(curr) { return current+1;});
+    }
+  });
+
+
   stats.child('schools').transaction(function(current) {
     if(current === null) {
       return [data.school];
