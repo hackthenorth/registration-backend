@@ -86,20 +86,8 @@ var doMath = function(obj) {
       return current+1;
   });
 
-  stats.child('graduates').transaction(function(current) {
-    if(data.student_status === 'graduate') {
+  stats.child('student_status').child(data.student_status).transaction(function(current) {
       return current+1;
-    } else {
-      return current;
-    }
-  });
-
-  stats.child('highschoolers').transaction(function(current) {
-    if(data.student_status === 'highschool') {
-      return current+1;
-    } else {
-      return current;
-    }
   });
 
   stats.child('schools').transaction(function(current) {
