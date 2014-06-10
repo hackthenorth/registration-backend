@@ -106,6 +106,8 @@ var doMath = function(user) {
       return [data.school];
     } else {
       current.push(data.school);
+      // the schools list appends the school name to the current list
+      // and make the array unique yielding total registered schools
       return current.reduce(function(p, c) {
                               if(p.indexOf(c) < 0) {
                                 p.push(c);
