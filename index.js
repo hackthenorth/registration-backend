@@ -50,7 +50,7 @@ var createUser = function(userObj) {
   users.set(userObj[hash]);
   map.set(userObj[hash].email);
 
-  if(userObj[hash].comments.length > 2) {
+  if(userObj[hash].comments.trim().length > 1) {
     fb.child('questions').push(userObj[hash].comments);
   }
 
@@ -58,9 +58,9 @@ var createUser = function(userObj) {
 }
 
 
-var doMath = function(obj) {
-  var hash = Object.keys(obj)[0];
-  var data = obj[hash];
+var doMath = function(user) {
+  var hash = Object.keys(user)[0];
+  var data = user[hash];
   var stamp = new Date(data.timestamp*1000);
   var stats = fb.child('stats');
 
@@ -70,20 +70,23 @@ var doMath = function(obj) {
     return current + 1;
   });
 
-  stats.child('emails').child(data.email.split('@')[1].replace(/\./g, '-')).transaction(function(current) {
+  var emailKey = data.email.split('@')[1].replace(/\./g, '-'); // fb doesn't allow periods in keys
+  stats.child('emails').child(emailKey).transaction(function(current) {
     return current+1;
   });
 
   stats.child('total').child('hardware').transaction(function(current) {
-    if(data.is_hardware === true) {
+    if(data.is_hardware) {
       return current + 1;
     } else {
-      stats.child('total').child('software').transaction(function(curr) { return curr+1;});
+      stats.child('total').child('software').transaction(function(curr) {
+        return curr+1;
+      });
     }
   });
 
   stats.child('total').child('first_hackathon').transaction(function(current) {
-    if(data.first_hackathon === true) {
+    if(data.first_hackathon) {
       return current+1;
     } else {
       return current;
