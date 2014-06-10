@@ -58,7 +58,17 @@ var doMath = function(obj) {
 
 
   stats.child('schools').transaction(function(current) {
-    return current + ['test']
+    if(current === null) {
+      return [data.school];
+    } else {
+      current.push(data.school);
+      return current.reduce(function(p, c) {
+                              if(p.indexOf(c) < 0) {
+                                p.push(c);
+                              }
+                              return p;
+                           }, []);
+    }
   });
 
 }
