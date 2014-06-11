@@ -31,7 +31,7 @@ var sanitizeData = function(obj) {
 
 
 // TODO: Make these functions a class
-var makeUserAccount = function(obj) {
+var makeUserObject = function(obj) {
   var user = {};
   var salt = settings.salt;
   var sanitized = sanitizeData(obj);
@@ -49,16 +49,42 @@ var createUser = function(userObj) {
   var users = fb.child('users').child(hash);
   var map = fb.child('map').child('users').child(hash);
 
-  users.set(userObj[hash]);
   map.set(userObj[hash].email);
 
   if(userObj[hash].comments.trim().length > 1) {
     fb.child('questions').push(userObj[hash].comments);
   }
 
+  users.set(userObj[hash]);
   doMath(userObj);
+
   var html = fs.readFileSync('./emails/applicant-submission.html').toString();
-  sendMail(userObj[hash].email, 'Thanks for applying', html);
+  sendMail(userObj[hash].email, 'Thanks for applying to Hack the North!', html);
+
+  /*users.set(userObj[hash], function(err) {
+    if(!err) {
+      var cb = fb.child('users').child(hash).child('flags').child('registration_email');
+      cb.on('value', function(snap) {
+        if(!snap.val()) {
+          //console.log('val', snap.val(), typeof snap.val());
+          var html = fs.readFileSync('./emails/applicant-submission.html').toString();
+          sendMail(userObj[hash].email, 'Thanks for applying to Hack the North!', html);
+        } else {
+        }
+        //cb.off('value');
+      });
+   } else {console.log(err)}
+  });*/
+
+/*  cb.on('value', function(snap) {
+    if(!snap.val()) {
+      //console.log('val', snap.val(), typeof snap.val());
+      var html = fs.readFileSync('./emails/applicant-submission.html').toString();
+      //sendMail(userObj[hash].email, 'Thanks for applying', html);
+      //cb.off('value');
+    }
+  });*/
+
 }
 
 
@@ -98,6 +124,10 @@ var doMath = function(user) {
   });
 
   stats.child('graduating').child(data.grad_year).transaction(function(current) {
+      return current+1;
+  });
+
+  stats.child('total').child('travel').transaction(function(current) {
       return current+1;
   });
 
@@ -157,8 +187,11 @@ var sendMail = function(to, subject, body) {
   }
 
   smtpTransport.sendMail(mailOptions, function(err, res) {
-    if (err) console.log(err);
-    console.log('done');
+    if(!err) {
+      fb.child('users').child(md5(mailOptions.to+settings.salt)).child('flags').child('registration_email').set(res.messageId);
+    } else {
+      fb.child('errors').child(md5(mailOptions.to+settings.salt)).child('emails').child('registration_email').set(res);
+    }
   });
 
 }
@@ -167,5 +200,5 @@ var sendMail = function(to, subject, body) {
 
 
 
-var data = makeUserAccount(testObject);
-console.log(createUser(data));
+var data = makeUserObject(testObject);
+createUser(data);
