@@ -1,6 +1,8 @@
 var Firebase = require('firebase');
 var settings = require('./config');
 var md5 = require('MD5');
+var nodemailer = require('nodemailer');
+var fs = require('fs');
 
 var fb = new Firebase('https://hackthenorth.firebaseio.com/');
 var ref = fb.child('register');
@@ -13,7 +15,7 @@ var testObject = {linkedin        : "http://linkedin.com/in/kartiktalwar",
                   name            : "Kartik Talwar",
                   comments        : "When do I find out if I'm in?",
                   timestamp       : 1402269531,
-                  email           : "ktalwar@uwaterloo.ca",
+                  email           : "talwar.kartik@gmail.com",
                   student_status  : "undergraduate",
                   is_hardware     : "true",
                   travel          : "false",
@@ -29,7 +31,7 @@ var sanitizeData = function(obj) {
 
 
 // TODO: Make these functions a class
-var makeUserAccount = function(obj) {
+var makeUserObject = function(obj) {
   var user = {};
   var salt = settings.salt;
   var sanitized = sanitizeData(obj);
@@ -47,14 +49,17 @@ var createUser = function(userObj) {
   var users = fb.child('users').child(hash);
   var map = fb.child('map').child('users').child(hash);
 
-  users.set(userObj[hash]);
   map.set(userObj[hash].email);
 
   if(userObj[hash].comments.trim().length > 1) {
     fb.child('questions').push(userObj[hash].comments);
   }
 
+  users.set(userObj[hash]);
   doMath(userObj);
+
+  var html = fs.readFileSync('./emails/applicant-submission.html').toString();
+  sendMail(userObj[hash].email, 'Thanks for applying to Hack the North!', html);
 }
 
 
@@ -97,6 +102,10 @@ var doMath = function(user) {
       return current+1;
   });
 
+  stats.child('total').child('travel').transaction(function(current) {
+      return current+1;
+  });
+
   stats.child('student_status').child(data.student_status).transaction(function(current) {
       return current+1;
   });
@@ -128,6 +137,41 @@ var doMath = function(user) {
 }
 
 
-var data = makeUserAccount(testObject);
 
-console.log(createUser(data));
+
+var sendMail = function(to, subject, body) {
+  var smtpTransport = nodemailer.createTransport("SMTP",{
+      service: "Mailgun", // sets automatically host, port and connection security settings
+      auth: {
+          user: "postmaster@hackthenorth.com",
+          pass: settings.mailgunPassword //fill in actual SMTP password in prod
+      }
+  });
+
+  var mailOptions = {
+    headers: {
+      'X-Mailgun-Campaign-Id': 'registration',
+      'X-Mailgun-Track': 'yes',
+      'X-Mailgun-Track-Clicks': 'yes',
+      'X-Mailgun-Track-Opens': 'yes'
+      },
+    from: '"Hack the North" <contact@hackthenorth.com>',
+    to: to,
+    subject: subject,
+    html: body
+  }
+
+  smtpTransport.sendMail(mailOptions, function(err, res) {
+    if(!err) {
+      fb.child('users').child(md5(mailOptions.to+settings.salt)).child('flags').child('registration_email').set(res.messageId);
+    } else {
+      fb.child('errors').child(md5(mailOptions.to+settings.salt)).child('emails').child('registration_email').set(res);
+    }
+  });
+
+}
+
+
+
+var data = makeUserObject(testObject);
+createUser(data);
