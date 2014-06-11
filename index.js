@@ -60,31 +60,6 @@ var createUser = function(userObj) {
 
   var html = fs.readFileSync('./emails/applicant-submission.html').toString();
   sendMail(userObj[hash].email, 'Thanks for applying to Hack the North!', html);
-
-  /*users.set(userObj[hash], function(err) {
-    if(!err) {
-      var cb = fb.child('users').child(hash).child('flags').child('registration_email');
-      cb.on('value', function(snap) {
-        if(!snap.val()) {
-          //console.log('val', snap.val(), typeof snap.val());
-          var html = fs.readFileSync('./emails/applicant-submission.html').toString();
-          sendMail(userObj[hash].email, 'Thanks for applying to Hack the North!', html);
-        } else {
-        }
-        //cb.off('value');
-      });
-   } else {console.log(err)}
-  });*/
-
-/*  cb.on('value', function(snap) {
-    if(!snap.val()) {
-      //console.log('val', snap.val(), typeof snap.val());
-      var html = fs.readFileSync('./emails/applicant-submission.html').toString();
-      //sendMail(userObj[hash].email, 'Thanks for applying', html);
-      //cb.off('value');
-    }
-  });*/
-
 }
 
 
@@ -195,8 +170,6 @@ var sendMail = function(to, subject, body) {
   });
 
 }
-
-
 
 
 
