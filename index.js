@@ -3,9 +3,12 @@ var settings = require('./config');
 var md5 = require('MD5');
 var nodemailer = require('nodemailer');
 var fs = require('fs');
+var request = require("request");
 
 var fb = new Firebase('https://hackthenorth.firebaseio.com/');
-var ref = fb.child('register');
+fb.auth(settings.fbToken, function(e, r) {});
+
+var ref = fb.child('signup');
 
 var testObject = {linkedin        : "http://linkedin.com/in/kartiktalwar",
                   grad_year       : "2015",
@@ -30,7 +33,6 @@ var sanitizeData = function(obj) {
 }
 
 
-// TODO: Make these functions a class
 var makeUserObject = function(obj) {
   var user = {};
   var salt = settings.salt;
@@ -42,8 +44,6 @@ var makeUserObject = function(obj) {
 }
 
 
-// at this point its the same as makeUserAccount
-// will get better in teh future
 var createUser = function(userObj) {
   var hash = Object.keys(userObj)[0]
   var users = fb.child('users').child(hash);
@@ -59,7 +59,14 @@ var createUser = function(userObj) {
   doMath(userObj);
 
   var html = fs.readFileSync('./emails/applicant-submission.html').toString();
-  sendMail(userObj[hash].email, 'Thanks for applying to Hack the North!', html);
+  var url = "https://hackthenorth.firebaseio.com/users/" + hash + "/flags/registration_email.json?auth="+settings.fbToken;
+
+  request(url, function(error, response, body) {
+    if(body == null || body === 'null') {
+      sendMail(userObj[hash].email, 'Thanks for applying to Hack the North!', html);
+    }
+  });
+
 }
 
 
@@ -172,6 +179,9 @@ var sendMail = function(to, subject, body) {
 }
 
 
+ref.on('child_added', function(i) {
+  var data = makeUserObject(i.val());
+  createUser(data);
+  console.log(data);
+});
 
-var data = makeUserObject(testObject);
-createUser(data);
