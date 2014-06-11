@@ -62,7 +62,7 @@ var createUser = function(userObj) {
   var url = "https://hackthenorth.firebaseio.com/users/" + hash + "/flags/registration_email.json?auth="+settings.fbToken;
 
   request(url, function(error, response, body) {
-    if(body == null || body === 'null') {
+    if(body === null || body === 'null') {
       sendMail(userObj[hash].email, 'Thanks for applying to Hack the North!', html);
     }
   });
